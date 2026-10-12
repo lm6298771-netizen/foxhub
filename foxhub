@@ -1,0 +1,261 @@
+-- ═══════════════════════════════════════════════════════════
+-- 🦊 FOX HUB - PARTE 2 (Loops + Server Hop)
+-- ═══════════════════════════════════════════════════════════
+if not _G.FoxSt then
+    return
+end
+
+local St=_G.FoxSt
+local P=game:GetService("Players")local L=P.LocalPlayer
+local W=game:GetService("Workspace")local S=game:GetService("StarterGui")
+local TS=game:GetService("TeleportService")
+local HS=game:GetService("HttpService")
+local function N(a,b)S:SetCore("SendNotification",{Title=a,Text=b,Duration=3})end
+
+if _G.FoxLoop then _G.FoxLoop=false task.wait(1)end
+_G.FoxLoop=true
+
+task.spawn(function()
+    while St.R and _G.FoxLoop do
+        pcall(function()
+            if _G.FoxTimer then
+                local achou=false
+                for _,g in pairs(L.PlayerGui:GetDescendants())do
+                    if g:IsA("TextLabel") or g:IsA("TextButton")then
+                        local m=string.match(g.Text,"(%d+:%d+)")
+                        if m then
+                            local l=string.lower(g.Text)
+                            if string.find(l,"proximo") or string.find(l,"próximo") or string.find(l,"next") or string.find(l,"evento")then
+                                _G.FoxTimer.Text="⏰ "..m achou=true break
+                            end
+                        end
+                    end
+                end
+                if not achou then
+                    local PG=L:WaitForChild("PlayerGui")
+                    local mainGui=PG:FindFirstChild("MainGUI")
+                    if mainGui then
+                        for _,g in pairs(mainGui:GetDescendants())do
+                            if g:IsA("TextLabel")then
+                                local m=string.match(g.Text,"(%d+:%d+)")
+                                if m then _G.FoxTimer.Text="⏰ "..m achou=true break end
+                            end
+                        end
+                    end
+                    if not achou then _G.FoxTimer.Text="⏰ --:--" end
+                end
+            end
+        end)
+        task.wait(1)
+    end
+end)
+
+local function pecaAlta(obj)
+    local alta,maiorY=nil,-9999
+    for _,p in ipairs(obj:GetDescendants())do
+        if p:IsA("BasePart")and p.Position.Y>maiorY then maiorY=p.Position.Y alta=p end
+    end
+    return alta
+end
+
+local function acharTerreno()
+    local nome=string.lower(L.Name)
+    local display=string.lower(L.DisplayName or "")
+    local id=tostring(L.UserId)
+    for _,obj in ipairs(W:GetDescendants())do
+        if obj:IsA("Model")and obj.Parent then
+            local n=string.lower(obj.Name)
+            if string.find(n,nome)or string.find(n,id)or(display~=""and string.find(n,display))then return obj end
+        end
+    end
+    return nil
+end
+
+task.spawn(function()
+    while St.R and _G.FoxLoop do
+        pcall(function()
+            if St.AF then
+                local c=L.Character
+                local h=c and c:FindFirstChild("HumanoidRootPart")
+                if h then
+                    for _,o in ipairs(W:GetDescendants())do
+                        if o.Name=="Super Honey"and o.Parent then
+                            local caminho=o:GetFullName():lower()
+                            if not caminho:find("carro")and not caminho:find("carrinho")then
+                                local alta=nil local maiorY=-9999
+                                if o:IsA("Model")then
+                                    for _,p in ipairs(o:GetDescendants())do
+                                        if p:IsA("BasePart")and p.Position.Y>maiorY then maiorY=p.Position.Y alta=p end
+                                    end
+                                elseif o:IsA("BasePart")then alta=o end
+                                if alta then
+                                    local pA=h.CFrame
+                                    h.CFrame=CFrame.new(alta.Position+Vector3.new(0,3,0))
+                                    task.wait(0.3)
+                                    h.CFrame=pA
+                                    task.wait(0.05)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+        task.wait(0.5)
+    end
+end)
+
+task.spawn(function()
+    while St.R and _G.FoxLoop do
+        pcall(function()
+            if St.AC then
+                local c=L.Character
+                local h=c and c:FindFirstChild("HumanoidRootPart")
+                if h then
+                    local t=acharTerreno()
+                    if t then
+                        local col=0
+                        for _,obj in ipairs(t:GetDescendants())do
+                            if obj:IsA("Model")and obj.Parent then
+                                local n=obj.Name:lower()
+                                if (n:find("apiary")or n:find("beehive"))and not n:find("large apiary")and not n:find("loja")then
+                                    local prim=obj.PrimaryPart
+                                    if not prim then prim=obj:FindFirstChildWhichIsA("BasePart",true)end
+                                    if prim then
+                                        local pA=h.CFrame
+                                        h.CFrame=CFrame.new(prim.Position+Vector3.new(0,3,0))
+                                        task.wait(0.15)
+                                        h.CFrame=pA
+                                        task.wait(0.02)
+                                        col=col+1
+                                    end
+                                end
+                            end
+                        end
+                        if col>0 then task.wait(15)end
+                    end
+                end
+            end
+        end)
+        task.wait(0.5)
+    end
+end)
+
+task.spawn(function()
+    while St.R and _G.FoxLoop do
+        pcall(function()
+            if St.AC then
+                local c=L.Character
+                local h=c and c:FindFirstChild("HumanoidRootPart")
+                if h then
+                    local t=acharTerreno()
+                    if t then
+                        local col=0
+                        for _,obj in ipairs(t:GetDescendants())do
+                            if obj:IsA("Model")and obj.Parent then
+                                local nb=obj.Name:lower()
+                                if nb=="large apiary"or nb=="honey barrel"then
+                                    local p=pecaAlta(obj)
+                                    if p then
+                                        local pA=h.CFrame
+                                        h.CFrame=CFrame.new(p.Position+Vector3.new(0,3,0))
+                                        task.wait(0.3)
+                                        h.CFrame=pA
+                                        task.wait(0.1)
+                                        col=col+1
+                                    end
+                                end
+                            end
+                        end
+                        if col>0 then task.wait(15)end
+                    end
+                end
+            end
+        end)
+        task.wait(0.5)
+    end
+end)
+
+task.spawn(function()
+    while St.R and _G.FoxLoop do
+        if St.AntiAFK then
+            pcall(function()
+                local vu=game:GetService("VirtualUser")
+                vu:CaptureController()
+                vu:ClickButton2(Vector2.new(0,0))
+                vu:Button1Down(Vector2.new(0,0))
+                task.wait(0.05)
+                vu:Button1Up(Vector2.new(0,0))
+            end)
+            pcall(function()
+                local c=L.Character
+                local h=c and c:FindFirstChildOfClass("Humanoid")
+                if h then h.Jump=true task.wait(0.1) h.Jump=false end
+            end)
+            task.wait(240)
+        else task.wait(3) end
+    end
+end)
+
+task.spawn(function()
+    while St.R and _G.FoxLoop do
+        task.wait(5)
+        if St.AR then
+            pcall(function()
+                if not game:IsLoaded() then return end
+                if not L.Parent then
+                    local pid=game.PlaceId local jid=game.JobId
+                    if jid and jid~=""then TS:TeleportToPlaceInstance(pid,jid,L)
+                    else TS:Teleport(pid,L) end
+                end
+            end)
+        end
+    end
+end)
+
+game:GetService("Players").PlayerRemoving:Connect(function(p)if p==L and St.AR then N("FOX","Caiu! Reconectando...",5)end end)
+
+task.spawn(function()
+    while St.R and _G.FoxLoop do
+        task.wait(5)
+        if St.SH then
+            pcall(function()
+                local url="https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=100"
+                local resposta=game:HttpGet(url)
+                local dados=HS:JSONDecode(resposta)
+                if dados and dados.data then
+                    local melhor=nil local menor=999
+                    for _,s in ipairs(dados.data)do
+                        if s.id~=game.JobId and s.playing and s.playing>0 and s.playing<menor then
+                            menor=s.playing melhor=s
+                        end
+                    end
+                    if melhor then
+                        N("FOX HUB","Server Hop: "..menor.." players",3)
+                        task.wait(1)
+                        TS:TeleportToPlaceInstance(game.PlaceId,melhor.id,L)
+                    else N("FOX HUB","Nenhum servidor bom",5)end
+                end
+            end)
+            task.wait(300)
+        end
+    end
+end)
+
+game:GetService("UserInputService").JumpRequest:Connect(function()if St.IJ then local c=L.Character local h=c and c:FindFirstChildOfClass("Humanoid")if h then h:ChangeState(Enum.HumanoidStateType.Jumping)end end end)
+game:GetService("RunService").Stepped:Connect(function()if St.Noclip then local c=L.Character if c then for _,p in ipairs(c:GetDescendants())do if p:IsA("BasePart")and p.CanCollide then p.CanCollide=false end end end end end)
+
+task.spawn(function()
+    while St.R and _G.FoxLoop do
+        if St.FPS then
+            pcall(function()
+                for _,o in ipairs(W:GetDescendants())do
+                    if (o:IsA("ParticleEmitter")or o:IsA("Trail")or o:IsA("Smoke")or o:IsA("Fire")or o:IsA("Sparkles")or o:IsA("Beam"))and o.Enabled then o.Enabled=false end
+                end
+            end)
+            task.wait(2)
+        else task.wait(2)end
+    end
+end)
+
+N("🦊 FOX HUB","✅ Parte 2 carregada!",5)
